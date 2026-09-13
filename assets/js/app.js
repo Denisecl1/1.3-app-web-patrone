@@ -1,6 +1,6 @@
 const API_URL =
 
-    "https://TU-PROYECTO.vercel.app/api/analyze";
+    "https://https://1-3-app-web-patrone-hcvner8ov-denisecl1.vercel.app/api/analyze";
 
 
 const form = document.getElementById("analyzeForm");
