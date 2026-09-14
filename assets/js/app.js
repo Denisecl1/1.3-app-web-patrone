@@ -67,23 +67,10 @@ form.addEventListener("submit", async (event) => {
     result.textContent = "La IA está analizando los patrones visuales...";
 
     try {
-        // =====================================================================
-        // INICIO DE LAS MODIFICACIONES (RETO 1: ESPECIALIZAR LA IDENTIFICACIÓN)
-        // =====================================================================
-        
-        // 1. CREACIÓN DEL CONTEXTO:
-        // Guardamos en una variable la instrucción de sistema que le dará un rol 
-        // específico a la IA. Este texto el usuario no lo ve en la interfaz, pero 
-        // la IA sí lo recibe y la obliga a comportarse como un experto.
+        // Contexto especializado en TIC
         const contextoEspecializado = "Actúa como un ingeniero especialista en Tecnologías de la Información y Comunicaciones (TIC). Analiza la imagen y enfócate EXCLUSIVAMENTE en identificar componentes electrónicos, equipo de cómputo, servidores, cableado, refacciones o herramientas de laboratorio. Estructura tu respuesta como un inventario técnico, agrupando los objetos por tipo y estimando la cantidad. Ignora los objetos que no pertenezcan al ámbito de las TIC. Petición del usuario: ";
-        // 2. CONCATENACIÓN:
-        // Unimos nuestro contexto especializado con el texto que el usuario 
-        // escribió en la caja de texto (promptInput).
-        const promptFinal = contextoEspecializado + promptInput.value.trim();
         
-        // =====================================================================
-        // FIN DE LAS VARIABLES MODIFICADAS
-        // =====================================================================
+        const promptFinal = contextoEspecializado + promptInput.value.trim();
 
         const response = await fetch(API_URL, {
             method: "POST",
@@ -92,10 +79,6 @@ form.addEventListener("submit", async (event) => {
             },
             body: JSON.stringify({
                 image_data: imageData,
-                
-                // 3. MODIFICACIÓN DEL PAYLOAD:
-                // Antes enviábamos el texto del usuario directamente: promptInput.value.trim()
-                // Ahora enviamos nuestra variable combinada con el rol asignado:
                 prompt: promptFinal 
             })
         });
