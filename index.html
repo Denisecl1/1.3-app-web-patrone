@@ -10,6 +10,9 @@
 
     <title>Identificador de patrones con IA</title>
 
+    <!-- 👇 Esta es la nueva línea para tu favicon 👇 -->
+    <link rel="icon" type="image/png" href="icon.png">
+
     <link rel="stylesheet" href="assets/css/styles.css">
 
 </head>
@@ -41,7 +44,6 @@
                 <div class="field">
                     <label>1. Selecciona una imagen</label>
                     
-                    <!-- 1. Ocultamos el input original con style="display: none;" -->
                     <input
                         id="imageInput"
                         type="file"
@@ -50,10 +52,10 @@
                         style="display: none;"
                     >
                     
-                    <!-- 2. Convertimos tu botón en un <label> conectado al input -->
-                    <label for="imageInput" class="button" style="width: 100%;">
-                      <div style="width: 100%;">
-                        <div style="width: 100%; justify-content: center;">
+                    <!-- Botón limpio, sin anchos forzados -->
+                    <label for="imageInput" class="button">
+                      <div>
+                        <div>
                           <div id="fileNameDisplay">Seleccionar archivo</div>
                         </div>
                       </div>
