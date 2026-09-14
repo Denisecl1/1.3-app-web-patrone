@@ -9,7 +9,6 @@ const analyzeButton = document.getElementById("analyzeButton");
 const result = document.getElementById("result");
 const statusText = document.getElementById("statusText");
 
-// Definimos la zona donde se podrá soltar la imagen (toda la página)
 const dropZone = document.body;
 
 const MAX_FILE_SIZE = 3 * 1024 * 1024;
@@ -21,9 +20,6 @@ const ALLOWED_TYPES = [
 
 let imageData = "";
 
-// ==========================================
-// NUEVA FUNCIÓN: Procesa el archivo recibido
-// ==========================================
 function procesarArchivo(file) {
     imageData = "";
     preview.removeAttribute("src");
@@ -52,58 +48,64 @@ function procesarArchivo(file) {
         imageData = reader.result;
         preview.src = imageData;
         analyzeButton.disabled = false;
-        result.textContent = "Imagen lista para analizar.";
+        result.innerHTML = "<p>Imagen lista para analizar.</p>";
     };
 
     reader.readAsDataURL(file);
 }
 
-// 1. Cuando se usa el botón de "Seleccionar archivo"
 fileInput.addEventListener("change", () => {
     procesarArchivo(fileInput.files[0]);
 });
 
-// ==========================================
-// EVENTOS DE DRAG AND DROP (RETO 3)
-// ==========================================
+// Eventos Drag and Drop
 dropZone.addEventListener("dragover", (event) => {
-    event.preventDefault(); // Evita que el navegador abra la imagen en otra pestaña
-    dropZone.style.opacity = "0.7"; // Efecto visual al arrastrar
+    event.preventDefault();
+    dropZone.style.opacity = "0.7"; 
 });
 
 dropZone.addEventListener("dragleave", (event) => {
     event.preventDefault();
-    dropZone.style.opacity = "1"; // Restaura la opacidad normal
+    dropZone.style.opacity = "1"; 
 });
 
 dropZone.addEventListener("drop", (event) => {
     event.preventDefault();
     dropZone.style.opacity = "1"; 
 
-    // Verifica si se soltó un archivo
     if (event.dataTransfer.files.length > 0) {
         const file = event.dataTransfer.files[0];
-        fileInput.files = event.dataTransfer.files; // Sincroniza con el input oculto
-        procesarArchivo(file); // Reutiliza la función para procesarlo
+        fileInput.files = event.dataTransfer.files; 
+        procesarArchivo(file); 
     }
 });
-// ==========================================
 
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (!imageData) {
-        result.textContent = "Primero selecciona una imagen.";
+        result.innerHTML = "<p>Primero selecciona una imagen.</p>";
         return;
     }
 
     analyzeButton.disabled = true;
     statusText.textContent = "● Analizando...";
-    result.textContent = "La IA está analizando los patrones visuales...";
+    result.innerHTML = "<p>La IA está analizando los patrones visuales...</p>";
 
     try {
-        // 1. CREACIÓN DEL CONTEXTO (RETO 1 + RETO 2):
-        const contextoEspecializado = "Actúa como un ingeniero especialista en Tecnologías de la Información y Comunicaciones (TIC). Analiza la imagen y enfócate EXCLUSIVAMENTE en identificar componentes electrónicos, equipo de cómputo, servidores, cableado, refacciones o herramientas de laboratorio. Organiza tu respuesta por categorías. Para cada categoría encontrada indica estrictamente: 1) Nombre del patrón u objeto, 2) Cantidad estimada, y 3) Nivel de certeza (Alto, Medio, Bajo). Ignora los objetos que no pertenezcan al ámbito de las TIC. Petición del usuario: ";
+        // ==========================================
+        // RETO 4: PROMPT PARA ESTRUCTURA JSON
+        // ==========================================
+        const contextoEspecializado = `Actúa como un ingeniero especialista en TIC. Analiza la imagen y enfócate EXCLUSIVAMENTE en identificar componentes electrónicos, equipo de cómputo, servidores, cableado o herramientas. 
+        Devuelve tu respuesta ÚNICAMENTE como un objeto JSON válido con la siguiente estructura exacta:
+        {
+          "descripcion_general": "Breve descripción de lo que ves",
+          "patrones": [
+            { "nombre": "Nombre del objeto", "cantidad_estimada": "Número o cantidad", "certeza": "Alto/Medio/Bajo" }
+          ],
+          "evidencia": "Qué elementos visuales usaste para identificar los objetos"
+        }
+        No escribas texto adicional fuera del JSON. Petición del usuario: `;
         
         const promptFinal = contextoEspecializado + promptInput.value.trim();
 
@@ -121,16 +123,62 @@ form.addEventListener("submit", async (event) => {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(
-                data.error || "Error del servidor"
-            );
+            throw new Error(data.error || "Error del servidor");
         }
 
-        result.textContent = data.analysis;
+        // ==========================================
+        // RETO 4: CONVERSIÓN DE JSON A TARJETAS HTML
+        // ==========================================
+        try {
+            // Limpiamos el texto por si la IA le agrega comillas invertidas de código Markdown (```json)
+            const jsonLimpio = data.analysis.replace(/```json/g, '').replace(/```/g, '').trim();
+            
+            // Transformamos el texto a un objeto JavaScript
+            const jsonResultado = JSON.parse(jsonLimpio);
+
+            // Armamos el HTML con diseño de tarjetas directamente desde JavaScript
+            let tarjetasHTML = `
+                <div style="background: #1e293b; padding: 15px; border-radius: 8px; color: white; margin-bottom: 15px;">
+                    <h3 style="margin-top: 0; color: #60a5fa;">Descripción General</h3>
+                    <p>${jsonResultado.descripcion_general}</p>
+                </div>
+                
+                <h3 style="color: #333;">Componentes Identificados</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+            `;
+
+            // Iteramos sobre cada patrón encontrado y creamos una tarjetita
+            jsonResultado.patrones.forEach(item => {
+                tarjetasHTML += `
+                    <div style="background: #2563eb; color: white; padding: 15px; border-radius: 8px; flex: 1 1 200px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h4 style="margin: 0 0 10px 0; border-bottom: 1px solid #60a5fa; padding-bottom: 5px;">${item.nombre}</h4>
+                        <p style="margin: 5px 0; font-size: 14px;"><strong>Cantidad:</strong> ${item.cantidad_estimada}</p>
+                        <p style="margin: 5px 0; font-size: 14px;"><strong>Certeza:</strong> ${item.certeza}</p>
+                    </div>
+                `;
+            });
+
+            // Agregamos la última tarjeta de Evidencia
+            tarjetasHTML += `
+                </div>
+                <div style="background: #334155; padding: 15px; border-radius: 8px; color: white;">
+                    <h3 style="margin-top: 0; color: #60a5fa;">Evidencia Visual</h3>
+                    <p>${jsonResultado.evidencia}</p>
+                </div>
+            `;
+
+            // Insertamos todo el HTML en la caja de resultados
+            result.innerHTML = tarjetasHTML;
+
+        } catch (parseError) {
+            console.error("Error convirtiendo JSON:", parseError);
+            result.innerHTML = `<p style="color: red;">Error: La IA no devolvió el formato esperado.</p><pre>${data.analysis}</pre>`;
+        }
+
         statusText.textContent = "● Análisis terminado";
     }
     catch (error) {
-        result.textContent = "Error: " + error.message;
+        result.innerHTML = "<p>Error: " + error.message + "</p>";
         statusText.textContent = "● Error";
     }
     finally {
