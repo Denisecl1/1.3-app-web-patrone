@@ -21,6 +21,19 @@ const ALLOWED_TYPES = [
 let imageData = "";
 
 function procesarArchivo(file) {
+    // ==========================================
+    // NUEVO: Mostrar el nombre del archivo en el botón
+    // ==========================================
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+    if (fileNameDisplay) {
+        if (file) {
+            fileNameDisplay.textContent = file.name;
+        } else {
+            fileNameDisplay.textContent = "Seleccionar archivo";
+        }
+    }
+    // ==========================================
+
     imageData = "";
     preview.removeAttribute("src");
     analyzeButton.disabled = true;
