@@ -75,8 +75,7 @@ form.addEventListener("submit", async (event) => {
         // Guardamos en una variable la instrucción de sistema que le dará un rol 
         // específico a la IA. Este texto el usuario no lo ve en la interfaz, pero 
         // la IA sí lo recibe y la obliga a comportarse como un experto.
-        const contextoEspecializado = "Eres un asistente especializado en gestión de inventarios dentales para el sistema Ortholive. Analiza la imagen y clasifica el instrumental, materiales o modelos 3D visibles. Estructura la información para facilitar el control de stock (considerando lineamientos de COFEPRIS) y estima las cantidades. Petición del usuario: ";
-        
+        const contextoEspecializado = "Actúa como un ingeniero especialista en Tecnologías de la Información y Comunicaciones (TIC). Analiza la imagen y enfócate EXCLUSIVAMENTE en identificar componentes electrónicos, equipo de cómputo, servidores, cableado, refacciones o herramientas de laboratorio. Estructura tu respuesta como un inventario técnico, agrupando los objetos por tipo y estimando la cantidad. Ignora los objetos que no pertenezcan al ámbito de las TIC. Petición del usuario: ";
         // 2. CONCATENACIÓN:
         // Unimos nuestro contexto especializado con el texto que el usuario 
         // escribió en la caja de texto (promptInput).
