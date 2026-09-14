@@ -93,9 +93,6 @@ form.addEventListener("submit", async (event) => {
     result.innerHTML = "<p>La IA está analizando los patrones visuales...</p>";
 
     try {
-        // ==========================================
-        // RETO 4: PROMPT PARA ESTRUCTURA JSON
-        // ==========================================
         const contextoEspecializado = `Actúa como un ingeniero especialista en TIC. Analiza la imagen y enfócate EXCLUSIVAMENTE en identificar componentes electrónicos, equipo de cómputo, servidores, cableado o herramientas. 
         Devuelve tu respuesta ÚNICAMENTE como un objeto JSON válido con la siguiente estructura exacta:
         {
@@ -120,23 +117,33 @@ form.addEventListener("submit", async (event) => {
             })
         });
 
-        const data = await response.json();
-
+        // ==========================================
+        // RETO 5: MANEJO DE ERRORES HTTP DEL SERVIDOR
+        // ==========================================
         if (!response.ok) {
-            throw new Error(data.error || "Error del servidor");
+            let errorMsg = "Error desconocido del servidor.";
+            
+            if (response.status === 400) {
+                errorMsg = "Error 400: Formato de imagen no permitido o código Base64 inválido.";
+            } else if (response.status === 403) {
+                errorMsg = "Error 403: Acceso denegado. Revisa las credenciales o permisos de la API.";
+            } else if (response.status === 413) {
+                errorMsg = "Error 413: El archivo es demasiado grande para procesarse.";
+            } else if (response.status === 500) {
+                errorMsg = "Error 500: Error interno del modelo de IA o fallo en el servidor.";
+            }
+            
+            // Lanzamos el error para que caiga directamente en el bloque "catch" de abajo
+            throw new Error(errorMsg);
         }
 
-        // ==========================================
-        // RETO 4: CONVERSIÓN DE JSON A TARJETAS HTML
-        // ==========================================
+        const data = await response.json();
+
+        // Código de generación de Tarjetas JSON (Reto 4)
         try {
-            // Limpiamos el texto por si la IA le agrega comillas invertidas de código Markdown (```json)
             const jsonLimpio = data.analysis.replace(/```json/g, '').replace(/```/g, '').trim();
-            
-            // Transformamos el texto a un objeto JavaScript
             const jsonResultado = JSON.parse(jsonLimpio);
 
-            // Armamos el HTML con diseño de tarjetas directamente desde JavaScript
             let tarjetasHTML = `
                 <div style="background: #1e293b; padding: 15px; border-radius: 8px; color: white; margin-bottom: 15px;">
                     <h3 style="margin-top: 0; color: #60a5fa;">Descripción General</h3>
@@ -147,7 +154,6 @@ form.addEventListener("submit", async (event) => {
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
             `;
 
-            // Iteramos sobre cada patrón encontrado y creamos una tarjetita
             jsonResultado.patrones.forEach(item => {
                 tarjetasHTML += `
                     <div style="background: #2563eb; color: white; padding: 15px; border-radius: 8px; flex: 1 1 200px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
@@ -158,7 +164,6 @@ form.addEventListener("submit", async (event) => {
                 `;
             });
 
-            // Agregamos la última tarjeta de Evidencia
             tarjetasHTML += `
                 </div>
                 <div style="background: #334155; padding: 15px; border-radius: 8px; color: white;">
@@ -167,18 +172,32 @@ form.addEventListener("submit", async (event) => {
                 </div>
             `;
 
-            // Insertamos todo el HTML en la caja de resultados
             result.innerHTML = tarjetasHTML;
 
         } catch (parseError) {
-            console.error("Error convirtiendo JSON:", parseError);
-            result.innerHTML = `<p style="color: red;">Error: La IA no devolvió el formato esperado.</p><pre>${data.analysis}</pre>`;
+            result.innerHTML = `<p style="color: red; font-weight: bold;">Error: El modelo no devolvió el formato JSON correctamente.</p>`;
         }
 
         statusText.textContent = "● Análisis terminado";
     }
     catch (error) {
-        result.innerHTML = "<p>Error: " + error.message + "</p>";
+        // ==========================================
+        // RETO 5: DETECCIÓN DE ERRORES DE RED Y CORS
+        // ==========================================
+        let mensajeMostrar = error.message;
+        
+        // Si el error es un TypeError (común cuando falla CORS o no hay internet)
+        if (error.name === "TypeError") {
+            mensajeMostrar = "Error de CORS o de conexión de red. Verifica que tu backend permite peticiones desde este dominio.";
+        }
+
+        // Mostramos el error en una "tarjeta" roja para que resalte visualmente
+        result.innerHTML = `
+            <div style="background: #fee2e2; border-left: 5px solid #ef4444; padding: 15px; border-radius: 5px; color: #991b1b;">
+                <h4 style="margin: 0 0 10px 0; font-size: 18px;">⚠️ Ocurrió un problema</h4>
+                <p style="margin: 0; font-size: 15px;">${mensajeMostrar}</p>
+            </div>
+        `;
         statusText.textContent = "● Error";
     }
     finally {
