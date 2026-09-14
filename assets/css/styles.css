@@ -166,34 +166,75 @@ textarea {
 }
 
 
-button {
+/* ========================================= */
+/* DISEÑO DEL BOTÓN ANIMADO CON ESTRELLAS    */
+/* ========================================= */
 
-    width: 100%;
-
-    border: none;
-
-    border-radius: 10px;
-
-    padding: 14px;
-
-    background: #2563eb;
-
-    color: #ffffff;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
+#analyzeButton {
+  position: relative;
+  width: 100%;
+  padding: 14px;
+  background: #fec195;
+  font-size: 17px;
+  font-weight: bold;
+  color: #181818;
+  border: 3px solid #fec195;
+  border-radius: 10px;
+  box-shadow: 0 0 0 #fec1958c;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
 }
 
-
-button:disabled {
-
-    opacity: .55;
-
-    cursor: not-allowed;
-
+/* Evita que el botón brille o haga animaciones si está deshabilitado */
+#analyzeButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none; 
 }
+
+#analyzeButton:hover {
+  background: transparent;
+  color: #fec195;
+  box-shadow: 0 0 25px #fec1958c;
+}
+
+.fil0 {
+  fill: #fec195; /* Cambié el color a naranja para que resalte sobre el fondo blanco */
+}
+
+/* Posiciones iniciales de las estrellas */
+.star-1, .star-2, .star-3, .star-4, .star-5, .star-6 {
+  position: absolute;
+  filter: drop-shadow(0 0 0 #fffdef);
+  z-index: -5;
+  opacity: 0; /* Ocultas por defecto */
+}
+
+.star-1 { top: 20%; left: 20%; width: 25px; transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96); }
+.star-2 { top: 45%; left: 45%; width: 15px; transition: all 1s cubic-bezier(0, 0.4, 0, 1.01); }
+.star-3 { top: 40%; left: 40%; width: 5px; transition: all 1s cubic-bezier(0, 0.4, 0, 1.01); }
+.star-4 { top: 20%; left: 40%; width: 8px; transition: all 0.8s cubic-bezier(0, 0.4, 0, 1.01); }
+.star-5 { top: 25%; left: 45%; width: 15px; transition: all 0.6s cubic-bezier(0, 0.4, 0, 1.01); }
+.star-6 { top: 5%; left: 50%; width: 5px; transition: all 0.8s ease; }
+
+/* Animaciones al pasar el cursor (hover) */
+#analyzeButton:hover .star-1, 
+#analyzeButton:hover .star-2, 
+#analyzeButton:hover .star-3, 
+#analyzeButton:hover .star-4, 
+#analyzeButton:hover .star-5, 
+#analyzeButton:hover .star-6 {
+  opacity: 1; /* Se hacen visibles */
+  z-index: 2;
+  filter: drop-shadow(0 0 10px #fec195);
+}
+
+#analyzeButton:hover .star-1 { top: -80%; left: -30%; }
+#analyzeButton:hover .star-2 { top: -25%; left: 10%; }
+#analyzeButton:hover .star-3 { top: 55%; left: 25%; }
+#analyzeButton:hover .star-4 { top: 30%; left: 80%; }
+#analyzeButton:hover .star-5 { top: 25%; left: 115%; }
+#analyzeButton:hover .star-6 { top: -10%; left: 60%; }
 
 
 .result {
