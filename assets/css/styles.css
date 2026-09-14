@@ -197,25 +197,14 @@ button:disabled {
 
 
 .result {
-
     min-height: 360px;
-
     margin: 0;
-
     padding: 16px;
-
     border-radius: 12px;
-
-    background: #0f172a;
-
-    color: #e2e8f0;
-
-    white-space: pre-wrap;
-
+    background: transparent; /* Quitamos el fondo oscuro */
+    color: #1f2937;
     line-height: 1.5;
-
     overflow: auto;
-
 }
 
 
@@ -261,3 +250,113 @@ button:disabled {
     }
 
 }
+
+/* ========================================= */
+/* DISEÑO DE TARJETAS Y RESULTADOS (RETO 6)  */
+/* ========================================= */
+
+.res-block {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.res-block.evidence {
+    background: #ebf8ff;
+    border-color: #bae6fd;
+}
+
+.res-title {
+    margin-top: 0;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.res-title.evidence {
+    color: #0369a1;
+}
+
+.res-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.res-card {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    flex: 1 1 220px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    border-top: 4px solid #94a3b8; /* Borde por defecto */
+}
+
+/* Colores dinámicos para los bordes según certeza */
+.res-card.borde-alto { border-top-color: #10b981; }
+.res-card.borde-medio { border-top-color: #f59e0b; }
+.res-card.borde-bajo { border-top-color: #ef4444; }
+
+.res-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.res-card-header h4 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 16px;
+}
+
+/* Badges (Etiquetas) */
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #ffffff;
+}
+
+.badge.alto { background: #10b981; }
+.badge.medio { background: #f59e0b; }
+.badge.bajo { background: #ef4444; }
+
+.res-card-qty {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* Barras de progreso */
+.progress-bg {
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: #3b82f6;
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+/* Tarjeta de Errores */
+.error-card {
+    background: #fee2e2;
+    border-left: 5px solid #ef4444;
+    padding: 15px;
+    border-radius: 5px;
+    color: #991b1b;
+}
+
+.error-card h4 { margin: 0 0 10px 0; font-size: 18px; }
+.error-card p { margin: 0; font-size: 15px; }

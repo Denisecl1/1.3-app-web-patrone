@@ -133,41 +133,61 @@ form.addEventListener("submit", async (event) => {
                 errorMsg = "Error 500: Error interno del modelo de IA o fallo en el servidor.";
             }
             
-            // Lanzamos el error para que caiga directamente en el bloque "catch" de abajo
             throw new Error(errorMsg);
         }
 
         const data = await response.json();
 
-        // Código de generación de Tarjetas JSON (Reto 4)
+        // ==========================================
+        // RETO 6: GENERACIÓN DE TARJETAS CON CLASES CSS
+        // ==========================================
         try {
             const jsonLimpio = data.analysis.replace(/```json/g, '').replace(/```/g, '').trim();
             const jsonResultado = JSON.parse(jsonLimpio);
 
             let tarjetasHTML = `
-                <div style="background: #1e293b; padding: 15px; border-radius: 8px; color: white; margin-bottom: 15px;">
-                    <h3 style="margin-top: 0; color: #60a5fa;">Descripción General</h3>
+                <div class="res-block">
+                    <h3 class="res-title"><span>📋</span> Descripción General</h3>
                     <p>${jsonResultado.descripcion_general}</p>
                 </div>
                 
-                <h3 style="color: #333;">Componentes Identificados</h3>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                <h3 style="color: #0f172a; margin-bottom: 15px;">💻 Componentes Identificados</h3>
+                <div class="res-grid">
             `;
 
             jsonResultado.patrones.forEach(item => {
+                // Lógica de colores según certeza
+                let certeza = item.certeza ? item.certeza.toLowerCase() : '';
+                let claseCerteza = certeza.includes('alto') ? 'alto' : certeza.includes('medio') ? 'medio' : 'bajo';
+                
+                // Lógica matemática para la barra
+                let cantidad = parseInt(item.cantidad_estimada) || 1;
+                let anchoBarra = Math.min(cantidad * 10, 100);
+
                 tarjetasHTML += `
-                    <div style="background: #2563eb; color: white; padding: 15px; border-radius: 8px; flex: 1 1 200px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                        <h4 style="margin: 0 0 10px 0; border-bottom: 1px solid #60a5fa; padding-bottom: 5px;">${item.nombre}</h4>
-                        <p style="margin: 5px 0; font-size: 14px;"><strong>Cantidad:</strong> ${item.cantidad_estimada}</p>
-                        <p style="margin: 5px 0; font-size: 14px;"><strong>Certeza:</strong> ${item.certeza}</p>
+                    <div class="res-card borde-${claseCerteza}">
+                        <div class="res-card-header">
+                            <h4>${item.nombre}</h4>
+                            <span class="badge ${claseCerteza}">
+                                Certeza: ${item.certeza}
+                            </span>
+                        </div>
+                        
+                        <div class="res-card-qty">
+                            <strong>Cantidad detectada:</strong> ${item.cantidad_estimada}
+                        </div>
+                        
+                        <div class="progress-bg">
+                            <div class="progress-fill" style="width: ${anchoBarra}%;"></div>
+                        </div>
                     </div>
                 `;
             });
 
             tarjetasHTML += `
                 </div>
-                <div style="background: #334155; padding: 15px; border-radius: 8px; color: white;">
-                    <h3 style="margin-top: 0; color: #60a5fa;">Evidencia Visual</h3>
+                <div class="res-block evidence">
+                    <h3 class="res-title evidence"><span>🔍</span> Evidencia Visual</h3>
                     <p>${jsonResultado.evidencia}</p>
                 </div>
             `;
@@ -175,7 +195,11 @@ form.addEventListener("submit", async (event) => {
             result.innerHTML = tarjetasHTML;
 
         } catch (parseError) {
-            result.innerHTML = `<p style="color: red; font-weight: bold;">Error: El modelo no devolvió el formato JSON correctamente.</p>`;
+            result.innerHTML = `
+                <div class="error-card">
+                    <h4>⚠️ Formato inválido</h4>
+                    <p>El modelo no devolvió el formato JSON correctamente.</p>
+                </div>`;
         }
 
         statusText.textContent = "● Análisis terminado";
@@ -186,16 +210,14 @@ form.addEventListener("submit", async (event) => {
         // ==========================================
         let mensajeMostrar = error.message;
         
-        // Si el error es un TypeError (común cuando falla CORS o no hay internet)
         if (error.name === "TypeError") {
             mensajeMostrar = "Error de CORS o de conexión de red. Verifica que tu backend permite peticiones desde este dominio.";
         }
 
-        // Mostramos el error en una "tarjeta" roja para que resalte visualmente
         result.innerHTML = `
-            <div style="background: #fee2e2; border-left: 5px solid #ef4444; padding: 15px; border-radius: 5px; color: #991b1b;">
-                <h4 style="margin: 0 0 10px 0; font-size: 18px;">⚠️ Ocurrió un problema</h4>
-                <p style="margin: 0; font-size: 15px;">${mensajeMostrar}</p>
+            <div class="error-card">
+                <h4>⚠️ Ocurrió un problema</h4>
+                <p>${mensajeMostrar}</p>
             </div>
         `;
         statusText.textContent = "● Error";
