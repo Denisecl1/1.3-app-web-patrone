@@ -67,8 +67,9 @@ form.addEventListener("submit", async (event) => {
     result.textContent = "La IA está analizando los patrones visuales...";
 
     try {
-        // Contexto especializado en TIC
-        const contextoEspecializado = "Actúa como un ingeniero especialista en Tecnologías de la Información y Comunicaciones (TIC). Analiza la imagen y enfócate EXCLUSIVAMENTE en identificar componentes electrónicos, equipo de cómputo, servidores, cableado, refacciones o herramientas de laboratorio. Estructura tu respuesta como un inventario técnico, agrupando los objetos por tipo y estimando la cantidad. Ignora los objetos que no pertenezcan al ámbito de las TIC. Petición del usuario: ";
+       
+        // 1. CREACIÓN DEL CONTEXTO (RETO 1 + RETO 2):
+        const contextoEspecializado = "Actúa como un ingeniero especialista en Tecnologías de la Información y Comunicaciones (TIC). Analiza la imagen y enfócate EXCLUSIVAMENTE en identificar componentes electrónicos, equipo de cómputo, servidores, cableado, refacciones o herramientas de laboratorio. Organiza tu respuesta por categorías. Para cada categoría encontrada indica estrictamente: 1) Nombre del patrón u objeto, 2) Cantidad estimada, y 3) Nivel de certeza (Alto, Medio, Bajo). Ignora los objetos que no pertenezcan al ámbito de las TIC. Petición del usuario: ";
         
         const promptFinal = contextoEspecializado + promptInput.value.trim();
 
